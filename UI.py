@@ -1,8 +1,7 @@
 from tkinter import *
-from tkinter import filedialog
 import serial as serial
 
-ser = serial.Serial("COM3", 9600, timeout=5)
+#ser = serial.Serial("COM3", 9600, timeout=5)
 b = 1
 
 
