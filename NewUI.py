@@ -83,7 +83,7 @@ def inventory():
 
     myinventory.insert(parent='',index='end', values=('10', 'B00-HPC', '101', 'Oklahoma', 'Moore'))
 
-    myinventory.pack()
+    myinventory.pack(pady=5)
 if __name__ == "__main__":
     root = Tk()
     root.title("Cytomat Control")
@@ -93,7 +93,7 @@ if __name__ == "__main__":
 ######### Load ################
     ld = Entry(root,width=20)
     ld.pack(pady=3)
-    ldbtn = Button(root,text="Load",command=load)
+    ldbtn = Button(root,text="Load", command=load)
     ldbtn.pack(pady=3)
 
 ######### Unload ################
