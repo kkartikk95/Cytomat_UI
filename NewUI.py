@@ -46,7 +46,15 @@ def Unload():
     print(ldcmd + val + "\r")
 
 def setparStrt():
-    pass
+    val = param.get()
+    cmd = "se:pb " + val + "\r"
+    ser.write(cmd.encode())
+    strt = status()
+    if strt == "ok":
+        cmd = "ll:va" + "\r"
+        ser.write(cmd.encode())
+    else:
+        Label(root, text="Please recheck parameters", font=('Arial', 12), bg="red").grid(row=100, column=295)
 
 def Stop():
     pass
@@ -54,19 +62,6 @@ def Stop():
 def CheckStatus():
     pass
 
-def del_database():
-    con = sqlite3.connect('inventory.db')
-    c = con.cursor()
-
-    c.execute("DROP table inventory")
-
-def database():
-    con = sqlite3.connect('inventory.db')
-    c = con.cursor()
-    c.execute(""" CREATE TABLE inventory (
-        Location int,
-        Plate_Name text )  
-    """)
 def inventory():
     window = Tk()
     window.title("Data Entry")
@@ -80,19 +75,19 @@ def inventory():
         messagebox.showinfo("Information", "The data has been added successfully")
 
     def Save():
-        with open("data_entry.csv", "w") as file:
+        with open("Cytomat_inventory.csv", "w") as file:
             Writer = writer(file)
             Writer.writerow(["Plate Name", "Location", "Researcher", "Date"])
             Writer.writerows(main_lst)
             messagebox.showinfo("Information", "Saved succesfully")
 
-    def Clear():
+    def Delete():
         Plate_Name.delete(0, END)
         Location.delete(0, END)
         researcher.delete(0, END)
         date.delete(0, END)
 
-    # 3 labels, 4 buttons,3 entry fields
+    # 4 labels, 4 buttons,4 entry fields
     label1 = Label(window, text="Plate Name: ", padx=20, pady=10)
     label2 = Label(window, text="Location: ", padx=20, pady=10)
     label3 = Label(window, text="Researcher: ", padx=20, pady=10)
@@ -105,7 +100,7 @@ def inventory():
 
     save = Button(window, text="Save", padx=20, pady=10, command=Save)
     add = Button(window, text="Add", padx=20, pady=10, command=Add)
-    clear = Button(window, text="Clear", padx=18, pady=10, command=Clear)
+    delete = Button(window, text="Clear", padx=18, pady=10, command=Delete)
     Exit = Button(window, text="Exit", padx=20, pady=10, command=window.quit)
 
     label1.grid(row=0, column=0)
@@ -119,11 +114,11 @@ def inventory():
     date.grid(row=3, column=1)
     save.grid(row=7, column=0, columnspan=2)
     add.grid(row=6, column=0, columnspan=2)
-    clear.grid(row=8, column=0, columnspan=2)
+    delete.grid(row=8, column=0, columnspan=2)
     Exit.grid(row=9, column=0, columnspan=2)
 
     window.mainloop()
-    print(lst)
+    #print(lst)
     print(main_lst)
 
 
