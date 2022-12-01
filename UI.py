@@ -4,7 +4,7 @@ from csv import *
 from tkinter import *
 from tkinter import messagebox
 
-#ser = serial.Serial("COM3", 9600, timeout=5)
+#ser = serial.Serial("COM4", 9600, timeout=5)
 b = 1
 
 
@@ -34,9 +34,13 @@ def load():
 
 def start():
     val = param.get()
+    print(val)
     cmd = "se:pb " + val + "\r"
+    print(cmd)
     ser.write(cmd.encode())
+    print(ser.write(cmd.encode()))
     strt = status()
+    print(strt)
     if strt == "ok":
         cmd = "ll:va" + "\r"
         ser.write(cmd.encode())
@@ -59,13 +63,16 @@ def StatusCheck():
     test = ret.decode()
     test = test[3] + test[4]
     q = StringVar()
-    q.set(ret)
+    q.set("Hello")
     Label(root, textvariable=q, font=('Arial', 12), bg="green").grid(row=101, column=100, pady=3)
-    if test == "00":
-        e = Label(root, text="No errors", font=('Arial', 12), bg="green")
-        e.grid(row=102, column=100, pady=3)
-
+    sts = StringVar()
+    sts.set("Will see the status here")
+    Label(root, textvariable=sts, font=('Arial', 12), bg="green").grid(row=102, column=100, pady=3)
+    if test == 1:
+        #e = Label(root, textvariable="No errors", font=('Arial', 12), bg="green").grid(row=102, column=100, pady=3)
+        sts.set("No errors")
     else:
+        sts.set("Error")
         Button(root, text="Reset error (please press this button)", command=reset).grid(row=102, column=100, pady=3)
 
     # Agitation Status Check
@@ -74,19 +81,26 @@ def StatusCheck():
     ret = ser.read(10)
     print(chr(ret[3]))
     stat = chr(ret[3])
+    stat = "0"
+    stss = StringVar()
+    stss.set("Will see Agitation status here")
+    Label(root, textvariable=stss, font=('Arial', 12), bg="green").grid(row=100, column=100, pady=3)
     if stat == '0':
-        Label(root, text="Agitation is OFF", font=('Arial', 12), bg="green").grid(row=100, column=100, pady=3)
+        stss.set("Agitation is OFF")
+        #Label(root, text="Agitation is OFF", font=('Arial', 12), bg="green").grid(row=100, column=100, pady=3)
     else:
-        Label(root, text="Agitation is ON", font=('Arial', 12), bg="green").grid(row=100, column=100, pady=3)
+        stss.set("Agitation is ON")
+        #Label(root, text="Agitation is ON", font=('Arial', 12), bg="green").grid(row=100, column=100, pady=3)
 
-    Destroy(e)
+    print("DONE")
 
 
 def status():
     status = ser.read(10)
     status = status.decode()
-    print(chr(status[0]) + chr(status[1]))
-    result = chr(status[0]) + chr(status[1])
+    print(status[0])
+    print(status[0] + status[1])
+    result = status[0] + status[1]
     print(status)
     q = StringVar()
     q.set(status)
@@ -164,8 +178,8 @@ def error():
     cmd = "ch:be" + "\r"
     ser.write(cmd.encode())
     status = ser.read(10)
-    print(chr(status[2]) + chr(status[3]))
-    result = chr(status[2]) + chr(status[3])
+    print(status[2] + status[3])
+    result = status[2] + status[3]
     print(result)
 
 
