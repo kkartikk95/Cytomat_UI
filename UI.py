@@ -4,10 +4,12 @@ from csv import *
 from tkinter import *
 from tkinter import messagebox
 
-ser = serial.Serial("COM4", 9600, timeout=5)
+#ser = serial.Serial("COM4", 9600, timeout=5)
 b = 1
 
 #---------------UNLOAD--------------#
+
+
 def Unload():
     val = transferstation.get()
     if val == "" or 0 <= int(val) > 150:
@@ -18,6 +20,8 @@ def Unload():
         unldsts = status()
 
 #---------------LOAD--------------#
+
+
 def load():
     val = position.get()
     if val == "" or 0 <= int(val) > 150:
@@ -28,6 +32,8 @@ def load():
         ldsts = status()
 
 #---------------Set Parameters and Start--------------#
+
+
 def start():
     val = param.get()
     print(val)
@@ -37,17 +43,18 @@ def start():
     print(ser.write(cmd.encode()))
     strt = status()
     print(strt)
-    srt = StringVar()
-    srt.set("Parameter Check")
-    Label(root, textvariable=srt, font=('Arial', 12), bg="red").grid(row=11, column=100)
+    f=Label(root, text="", font=('Arial', 12), bg="red")
+    f.grid(row=11, column=100)
     if strt == "ok":
         cmd = "ll:va" + "\r"
         ser.write(cmd.encode())
-        srt.set("Parameters Good")
+        f.config(text = "Parameters Good", bg="green")
     else:
-        srt.set("Please recheck Parameters")
+        f.config(text="Please recheck Parameters", bg="green")
 
 #---------------Reset Error Bit--------------#
+
+
 def reset():
     cmd = "rs:be" + "\r"
     ser.write(cmd.encode())
@@ -55,6 +62,8 @@ def reset():
     print(ret)
 
 #---------------Check Status of Incubator and Agitation--------------#
+
+
 def StatusCheck():
     # Error Bit check
     cmd = "ch:be" + "\r"
@@ -63,16 +72,13 @@ def StatusCheck():
     test = ret.decode()
     test = (test[3] + test[4])
     print("Test = ", test)
-    # q = StringVar()
-    # q.set("Hello")
-    # Label(root, textvariable=q, font=('Arial', 12), bg="green").grid(row=101, column=100, pady=3)
     sts = StringVar()
     sts.set("Will see the status here")
-    Label(root, textvariable=sts, font=('Arial', 12), bg="green").grid(row=102, column=100, pady=3)
+    f= Label(root, text="Will see the status here", font=('Arial', 12), bg="green")
+    f.grid(row=102, column=100, pady=3)
     if test == "00":
-        sts.set("No errors")
+        f.config(text="No errors")
     else:
-        sts.set("Error")
         Button(root, text="Reset error (please press this button)", command=reset).grid(row=102, column=100, pady=3)
 
     # Agitation Status Check
@@ -81,13 +87,12 @@ def StatusCheck():
     ret = ser.read(10)
     print(chr(ret[3]))
     stat = chr(ret[3])
-    stss = StringVar()
-    stss.set("Will see Agitation status here")
-    Label(root, textvariable=stss, font=('Arial', 12), bg="green").grid(row=100, column=100, pady=3)
+    f = Label(root, text="Will see Agitation status here", font=('Arial', 12), bg="green")
+    f.grid(row=100, column=100, pady=3)
     if stat == '0':
-        stss.set("Agitation is OFF")
+        f.config(text="Agitation is OFF")
     else:
-        stss.set("Agitation is ON")
+        f.config(text="Agitation is ON")
 
     print("DONE")
 
@@ -101,16 +106,22 @@ def status():
     print(status)
     q = StringVar()
     q.set(result)
-    Label(root, textvariable=q, font=('Arial', 12), bg="green").grid(row=101, column=100, pady=3)
+    f = Label(root, text="", font=('Arial', 12), bg="green")
+    f.grid(row=101, column=100, pady=3)
+    f.config(textvariable=q)
     return result
 
 #---------------Stop Agitation--------------#
+
+
 def stop():
     cmd = "ll:vd" + "\r"
     ser.write(cmd.encode())
     Label(root, text="Stopped", font=('Arial', 12), bg="Red").grid(row=103, column=100, pady=3)
 
 #---------------Open Inventory for Add or Delete data--------------#
+
+
 def inventory(b):
     window = Tk()
     window.title("Data Entry")
@@ -124,7 +135,7 @@ def inventory(b):
         messagebox.showinfo("Information", "The data has been added successfully")
 
     def Save():
-        with open("Cytomat_inventory.csv", "wb") as file:
+        with open("Cytomat_inventory.csv", "w") as file:
             Writer = writer(file)
             Writer.writerow(["Plate Name", "Location", "Researcher", "Date"])
             Writer.writerows(main_lst)
