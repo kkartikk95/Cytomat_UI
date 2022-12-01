@@ -4,14 +4,10 @@ from csv import *
 from tkinter import *
 from tkinter import messagebox
 
-#ser = serial.Serial("COM4", 9600, timeout=5)
+ser = serial.Serial("COM4", 9600, timeout=5)
 b = 1
 
-
-def Destroy(e):
-    e.after(10000, e.destroy())
-
-
+#---------------UNLOAD--------------#
 def Unload():
     val = transferstation.get()
     if val == "" or 0 <= int(val) > 150:
@@ -21,7 +17,7 @@ def Unload():
         ser.write(cmd.encode())
         unldsts = status()
 
-
+#---------------LOAD--------------#
 def load():
     val = position.get()
     if val == "" or 0 <= int(val) > 150:
@@ -31,7 +27,7 @@ def load():
         ser.write(cmd.encode())
         ldsts = status()
 
-
+#---------------Set Parameters and Start--------------#
 def start():
     val = param.get()
     print(val)
@@ -41,35 +37,39 @@ def start():
     print(ser.write(cmd.encode()))
     strt = status()
     print(strt)
+    srt = StringVar()
+    srt.set("Parameter Check")
+    Label(root, textvariable=srt, font=('Arial', 12), bg="red").grid(row=11, column=100)
     if strt == "ok":
         cmd = "ll:va" + "\r"
         ser.write(cmd.encode())
+        srt.set("Parameters Good")
     else:
-        Label(root, text="Please recheck parameters", font=('Arial', 12), bg="red").grid(row=100, column=295)
+        srt.set("Please recheck Parameters")
 
-
+#---------------Reset Error Bit--------------#
 def reset():
     cmd = "rs:be" + "\r"
     ser.write(cmd.encode())
     ret = ser.read(10)
     print(ret)
 
-
+#---------------Check Status of Incubator and Agitation--------------#
 def StatusCheck():
     # Error Bit check
     cmd = "ch:be" + "\r"
     ser.write(cmd.encode())
     ret = ser.read(10)
     test = ret.decode()
-    test = test[3] + test[4]
-    q = StringVar()
-    q.set("Hello")
-    Label(root, textvariable=q, font=('Arial', 12), bg="green").grid(row=101, column=100, pady=3)
+    test = (test[3] + test[4])
+    print("Test = ", test)
+    # q = StringVar()
+    # q.set("Hello")
+    # Label(root, textvariable=q, font=('Arial', 12), bg="green").grid(row=101, column=100, pady=3)
     sts = StringVar()
     sts.set("Will see the status here")
     Label(root, textvariable=sts, font=('Arial', 12), bg="green").grid(row=102, column=100, pady=3)
-    if test == 1:
-        #e = Label(root, textvariable="No errors", font=('Arial', 12), bg="green").grid(row=102, column=100, pady=3)
+    if test == "00":
         sts.set("No errors")
     else:
         sts.set("Error")
@@ -81,16 +81,13 @@ def StatusCheck():
     ret = ser.read(10)
     print(chr(ret[3]))
     stat = chr(ret[3])
-    stat = "0"
     stss = StringVar()
     stss.set("Will see Agitation status here")
     Label(root, textvariable=stss, font=('Arial', 12), bg="green").grid(row=100, column=100, pady=3)
     if stat == '0':
         stss.set("Agitation is OFF")
-        #Label(root, text="Agitation is OFF", font=('Arial', 12), bg="green").grid(row=100, column=100, pady=3)
     else:
         stss.set("Agitation is ON")
-        #Label(root, text="Agitation is ON", font=('Arial', 12), bg="green").grid(row=100, column=100, pady=3)
 
     print("DONE")
 
@@ -103,17 +100,17 @@ def status():
     result = status[0] + status[1]
     print(status)
     q = StringVar()
-    q.set(status)
+    q.set(result)
     Label(root, textvariable=q, font=('Arial', 12), bg="green").grid(row=101, column=100, pady=3)
     return result
 
-
+#---------------Stop Agitation--------------#
 def stop():
     cmd = "ll:vd" + "\r"
     ser.write(cmd.encode())
     Label(root, text="Stopped", font=('Arial', 12), bg="Red").grid(row=103, column=100, pady=3)
 
-
+#---------------Open Inventory for Add or Delete data--------------#
 def inventory(b):
     window = Tk()
     window.title("Data Entry")
@@ -173,7 +170,7 @@ def inventory(b):
     # print(lst)
     print(main_lst)
 
-
+#---------------Check Error--------------#
 def error():
     cmd = "ch:be" + "\r"
     ser.write(cmd.encode())
@@ -186,7 +183,7 @@ def error():
 if __name__ == "__main__":
     root = Tk()
     root.title("Cytomat Control")
-    root.geometry("2736x1824")
+    root.geometry("900x900")
     # ______________LOAD_________________________________#
     position = Entry(root, width=20)
     position.grid(row=1, column=1, pady=4)
