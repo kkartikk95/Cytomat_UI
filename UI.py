@@ -3,6 +3,8 @@ import serial as serial
 from csv import *
 from tkinter import *
 from tkinter import messagebox
+from openpyxl import Workbook
+from openpyxl import load_workbook
 
 #ser = serial.Serial("COM4", 9600, timeout=5)
 b = 1
@@ -15,10 +17,11 @@ def Unload():
     if val == "" or 0 <= int(val) > 150:
         Label(root, text="Please input Unload location in range from (001-150)", font=('Arial', 12), bg="red").pack()
     else:
+        
         cmd = "mv:st " + val + "\r"
         ser.write(cmd.encode())
         unldsts = status()
-
+       
 #---------------LOAD--------------#
 
 
@@ -123,7 +126,7 @@ def stop():
 
 
 def inventory(b):
-    window = Tk()
+    window = Toplevel(root)
     window.title("Data Entry")
     window.geometry("700x350")
     main_lst = []
@@ -159,7 +162,7 @@ def inventory(b):
     date = Entry(window, width=30, borderwidth=3)
 
     save = Button(window, text="Save", padx=20, pady=10, command=Save)
-    add = Button(window, text="Add", padx=20, pady=10, command=Add)
+    #add = Button(window, text="Add", padx=20, pady=10, command=Add)
     delete = Button(window, text="Clear", padx=18, pady=10, command=Delete)
     Exit = Button(window, text="Exit", padx=20, pady=10, command=window.quit)
 
@@ -173,11 +176,11 @@ def inventory(b):
     researcher.grid(row=2, column=1)
     date.grid(row=3, column=1)
     save.grid(row=7, column=0, columnspan=2)
-    add.grid(row=6, column=0, columnspan=2)
+    #add.grid(row=6, column=0, columnspan=2)
     delete.grid(row=8, column=0, columnspan=2)
     Exit.grid(row=9, column=0, columnspan=2)
 
-    window.mainloop()
+    #window.mainloop()
     # print(lst)
     print(main_lst)
 
