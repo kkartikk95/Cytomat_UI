@@ -6,9 +6,23 @@ from tkinter import messagebox
 from openpyxl import Workbook
 from openpyxl import load_workbook
 
+
+#---------------initializations--------------#
 #ser = serial.Serial("COM4", 9600, timeout=5)
 b = 1
+w = Workbook()
+sheet = w.active
+sheet.column_dimensions['A'].width = 40
+sheet.column_dimensions['B'].width = 30
+sheet.column_dimensions['C'].width = 30
+sheet.column_dimensions['D'].width = 30
 
+sheet.cell(row=1,column=1).value = "Date"
+sheet.cell(row=1,column=2).value = "Plate ID"
+sheet.cell(row=1,column=3).value = "Location"
+sheet.cell(row=1,column=4).value = "Researcher"
+
+w.save(filename="Inventory.xlsx")
 #---------------UNLOAD--------------#
 
 
@@ -138,32 +152,42 @@ def inventory(b):
         messagebox.showinfo("Information", "The data has been added successfully")
 
     def Save():
-        with open("Cytomat_inventory.csv", "w") as file:
-            Writer = writer(file)
-            Writer.writerow(["Plate Name", "Location", "Researcher", "Date"])
-            Writer.writerows(main_lst)
-            messagebox.showinfo("Information", "Saved succesfully")
+        # with open("Cytomat_inventory.csv", "w") as file:
+        #     Writer = writer(file)
+        #     Writer.writerow(["Plate Name", "Location", "Researcher", "Date"])
+        #     Writer.writerows(main_lst)
+        current_row = sheet.max_row
+        current_column = sheet.max_column
+        dt = Date.get()
+        pid = Plate_ID.get()
+        loc = Location.get()
+        rs = Researcher.get()
+        sheet.cell(row = current_row+1,column=1).value = dt
+        sheet.cell(row = current_row+1,column=2).value = pid
+        sheet.cell(row = current_row+1,column=3).value = loc
+        sheet.cell(row = current_row+1,column=4).value = rs
+        w.save('Inventory.xlsx')
+
+        messagebox.showinfo("Information", "Saved succesfully")
 
     def Delete():
-        Plate_Name.delete(0, END)
-        Location.delete(0, END)
-        researcher.delete(0, END)
-        date.delete(0, END)
+       sheet.delete_rows(2)
+       w.save("Inventory.xlsx")
 
     # 4 labels, 4 buttons,4 entry fields
-    label1 = Label(window, text="Plate Name: ", padx=20, pady=10)
-    label2 = Label(window, text="Location: ", padx=20, pady=10)
-    label3 = Label(window, text="Researcher: ", padx=20, pady=10)
-    label4 = Label(window, text="Date: ", padx=20, pady=10)
+    label1 = Label(window, text="Date: ", padx=20, pady=10)
+    label2 = Label(window, text="Plate_ID: ", padx=20, pady=10)
+    label3 = Label(window, text="Location: ", padx=20, pady=10)
+    label4 = Label(window, text="Researcher: ", padx=20, pady=10)
 
-    Plate_Name = Entry(window, width=30, borderwidth=3)
+    Date = Entry(window, width=30, borderwidth=3)
+    Plate_ID = Entry(window, width=30, borderwidth=3)
     Location = Entry(window, width=30, borderwidth=3)
-    researcher = Entry(window, width=30, borderwidth=3)
-    date = Entry(window, width=30, borderwidth=3)
+    Researcher = Entry(window, width=30, borderwidth=3)
 
     save = Button(window, text="Save", padx=20, pady=10, command=Save)
     #add = Button(window, text="Add", padx=20, pady=10, command=Add)
-    delete = Button(window, text="Clear", padx=18, pady=10, command=Delete)
+    delete = Button(window, text="Delete", padx=18, pady=10, command=Delete)
     Exit = Button(window, text="Exit", padx=20, pady=10, command=window.quit)
 
     label1.grid(row=0, column=0)
@@ -171,10 +195,10 @@ def inventory(b):
     label3.grid(row=2, column=0)
     label4.grid(row=3, column=0)
 
-    Plate_Name.grid(row=0, column=1)
-    Location.grid(row=1, column=1)
-    researcher.grid(row=2, column=1)
-    date.grid(row=3, column=1)
+    Date.grid(row=0, column=1)
+    Plate_ID.grid(row=1, column=1)
+    Location.grid(row=2, column=1)
+    Researcher.grid(row=3, column=1)
     save.grid(row=7, column=0, columnspan=2)
     #add.grid(row=6, column=0, columnspan=2)
     delete.grid(row=8, column=0, columnspan=2)
